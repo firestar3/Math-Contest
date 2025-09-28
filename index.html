@@ -81,42 +81,41 @@
     const auth = firebase.auth();
 
     // Register function
-    async function registerUser() {
-      const email = document.getElementById('regEmail').value.trim();
-      const password = document.getElementById('regPass').value;
-      try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        document.getElementById('output').innerText = "Registered: " + userCredential.user.email;
-        console.log("Registered user:", userCredential.user);
-      } catch (error) {
-        document.getElementById('output').innerText = "Error: " + error.message;
-        console.error(error);
-      }
-    }
+    window.registerUser = async function() {
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPass').value;
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    document.getElementById('output').innerText = "Registered: " + userCredential.user.email;
+    console.log("Registered user:", userCredential.user);
+  } catch (error) {
+    document.getElementById('output').innerText = "Error: " + error.message;
+    console.error(error);
+  }
+}
 
-    // Login function
-    async function loginUser() {
-      const email = document.getElementById('logEmail').value.trim();
-      const password = document.getElementById('logPass').value;
-      try {
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        document.getElementById('output').innerText = "Logged in: " + userCredential.user.email;
-        console.log("Logged in user:", userCredential.user);
-      } catch (error) {
-        document.getElementById('output').innerText = "Login Error: " + error.message;
-        console.error(error);
-      }
-    }
+window.loginUser = async function() {
+  const email = document.getElementById('logEmail').value.trim();
+  const password = document.getElementById('logPass').value;
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    document.getElementById('output').innerText = "Logged in: " + userCredential.user.email;
+    console.log("Logged in user:", userCredential.user);
+  } catch (error) {
+    document.getElementById('output').innerText = "Login Error: " + error.message;
+    console.error(error);
+  }
+}
 
-    // Show currently logged-in user
-    function showProfile() {
-      const user = auth.currentUser;
-      if (user) {
-        document.getElementById('output').innerText = "Logged in as: " + user.email;
-      } else {
-        document.getElementById('output').innerText = "No user logged in.";
-      }
-    }
+window.showProfile = function() {
+  const user = auth.currentUser;
+  if (user) {
+    document.getElementById('output').innerText = "Logged in as: " + user.email;
+  } else {
+    document.getElementById('output').innerText = "No user logged in.";
+  }
+}
+
   </script>
 </body>
 </html>
