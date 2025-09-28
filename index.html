@@ -1,127 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Math Contest</title>
-<style>
-body { font-family: Arial, sans-serif; padding: 20px; }
-h1 { font-size: 28px; }
-button { margin: 5px; padding: 8px 12px; font-size: 16px; }
-#question { margin-top: 20px; font-size: 20px; }
-#timer { font-weight: bold; margin-top: 10px; }
-#score { margin-top: 10px; font-weight: bold; }
-</style>
+  <meta charset="UTF-8">
+  <title>Firebase Login/Register</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 95%;
+      padding: 10px;
+      margin-top: 12px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #45a049; }
+    h2 { margin-bottom: 1rem; }
+    #output { margin-top: 1rem; color: #333; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Register</h2>
+    <input id="regEmail" type="email" placeholder="Email">
+    <input id="regPass" type="password" placeholder="Password">
+    <button onclick="registerUser()">Register</button>
 
-<h1>Math Contest</h1>
-<div id="timer">Time Remaining: 30:00</div>
-<div id="score">Current Score: 0</div>
+    <h2>Login</h2>
+    <input id="logEmail" type="email" placeholder="Email">
+    <input id="logPass" type="password" placeholder="Password">
+    <button onclick="loginUser()">Login</button>
 
-<div id="question"></div>
+    <h2>Profile</h2>
+    <button onclick="showProfile()">Show Profile</button>
+    <p id="output"></p>
+  </div>
 
-<input type="text" id="answer" placeholder="Enter your answer">
-<button onclick="submitAnswer()">Submit Answer</button>
-<button onclick="clearAnswer()">Clear Answer</button>
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-<div style="margin-top:20px;">
-<button onclick="prevQuestion()">Prev</button>
-<button onclick="nextQuestion()">Next</button>
-<button onclick="finalSubmit()">Submit Contest</button>
-</div>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
+      authDomain: "math-contest-63f0d.firebaseapp.com",
+      projectId: "math-contest-63f0d",
+      storageBucket: "math-contest-63f0d.firebasestorage.app",
+      messagingSenderId: "387688141725",
+      appId: "1:387688141725:web:d9742d49e6a49a6bbb5574"
+    };
 
-<script>
-// ---------- Questions ----------
-const QUESTIONS = [
-{q: "Solve: 2^(x+1) + 2^x = 96. Find x.", ans: "5"},
-{q: "How many even numbers from 200-700 can be created by choosing 3 unique digits from {1,2,5,7,8,9}?", ans: "12"},
-{q: "Bucket problem: full weight = 3a-2b", ans: "3a-2b"},
-{q: "Dunbar family: how many children?", ans: "6"},
-{q: "Square EFGH ratio of area to ABCD?", ans: "25/32"},
-{q: "Basketball free throws?", ans: "13"},
-{q: "Circles A, B, C area outside overlap?", ans: "2"},
-{q: "Pencil cost in cents?", ans: "11"},
-{q: "Bookshelf arrangement?", ans: "40"},
-{q: "6x^2 + 14x - 34 = 6, smallest x?", ans: "-4"}
-];
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-const NUM_QUESTIONS = QUESTIONS.length;
-let currentQ = 0;
-let answers = Array(NUM_QUESTIONS).fill("");
-let attempts = Array(NUM_QUESTIONS).fill(0);
-let scores = Array(NUM_QUESTIONS).fill(7);
-
-// ---------- Timer ----------
-let duration = 30*60; // 30 minutes in seconds
-let timerInterval = setInterval(() => {
-    if(duration <= 0){ autoSubmit(); return; }
-    duration--;
-    let m = Math.floor(duration/60).toString().padStart(2,'0');
-    let s = (duration%60).toString().padStart(2,'0');
-    document.getElementById("timer").textContent = `Time Remaining: ${m}:${s}`;
-},1000);
-
-// ---------- Functions ----------
-function normalize(s){ return s.trim().toLowerCase().replace(/\s/g,""); }
-function computePoints(attempt){ return Math.max(7 - 2*(attempt-1),0); }
-
-function showQuestion(){
-    document.getElementById("question").textContent = `Q${currentQ+1}: ${QUESTIONS[currentQ].q}`;
-    document.getElementById("answer").value = answers[currentQ];
-    updateScore();
-}
-
-function updateScore(){
-    let total = 0;
-    for(let i=0;i<NUM_QUESTIONS;i++){
-        if(normalize(answers[i]) === normalize(QUESTIONS[i].ans) && attempts[i]>0){
-            total += computePoints(attempts[i]);
-        }
+    // Register function
+    async function registerUser() {
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPass').value;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        document.getElementById('output').innerText = "Registered: " + userCredential.user.email;
+      } catch (error) {
+        document.getElementById('output').innerText = "Error: " + error.message;
+      }
     }
-    document.getElementById("score").textContent = `Current Score: ${total}`;
-}
 
-function submitAnswer(){
-    let ans = document.getElementById("answer").value.trim();
-    if(ans === ""){ alert("Enter an answer."); return; }
-    attempts[currentQ]++;
-    if(normalize(ans) === normalize(QUESTIONS[currentQ].ans)){
-        scores[currentQ] = computePoints(attempts[currentQ]);
-        answers[currentQ] = ans;
-        alert(`Correct! You earned ${scores[currentQ]} points.`);
-    } else {
-        scores[currentQ] = Math.max(scores[currentQ]-2,0);
-        answers[currentQ] = ans;
-        alert(`Incorrect. Problem worth now ${scores[currentQ]}`);
+    // Login function
+    async function loginUser() {
+      const email = document.getElementById('logEmail').value;
+      const password = document.getElementById('logPass').value;
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        document.getElementById('output').innerText = "Logged in: " + userCredential.user.email;
+      } catch (error) {
+        document.getElementById('output').innerText = "Error: " + error.message;
+      }
     }
-    updateScore();
-}
 
-function clearAnswer(){ document.getElementById("answer").value = ""; }
-function prevQuestion(){ if(currentQ>0){ currentQ--; showQuestion(); } }
-function nextQuestion(){ if(currentQ<NUM_QUESTIONS-1){ currentQ++; showQuestion(); } }
-
-function finalSubmit(){
-    clearInterval(timerInterval);
-    let total = 0;
-    for(let i=0;i<NUM_QUESTIONS;i++){
-        if(normalize(answers[i]) === normalize(QUESTIONS[i].ans) && attempts[i]>0){
-            total += computePoints(attempts[i]);
-        }
+    // Show current user
+    function showProfile() {
+      const user = auth.currentUser;
+      if (user) {
+        document.getElementById('output').innerText = "Logged in as: " + user.email;
+      } else {
+        document.getElementById('output').innerText = "No user logged in.";
+      }
     }
-    alert(`Contest Submitted!\nFinal Score: ${total} pts\nTime Used: ${30*60-duration}s`);
-}
-
-function autoSubmit(){
-    clearInterval(timerInterval);
-    alert("Time's up! Contest auto-submitted.");
-    finalSubmit();
-}
-
-// ---------- Initialize ----------
-showQuestion();
-
-</script>
+  </script>
 </body>
 </html>
+
