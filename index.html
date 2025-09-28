@@ -10,7 +10,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js"></script>
-
+  
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
@@ -24,8 +24,8 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    const email = document.getElementById('regEmail').value.trim();
-    const password = document.getElementById('regPass').value;
+    const email = 'aaravsfo@gmail.com';
+    const password = '123456';
     
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     
