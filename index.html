@@ -60,11 +60,12 @@
     <p id="output"></p>
   </div>
 
-  <script type="module">
-    // Import Firebase SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+  <!-- Firebase App (required) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
+  <!-- Firebase Auth -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js"></script>
 
+  <script>
     // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
@@ -76,34 +77,38 @@
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
     // Register function
     async function registerUser() {
-      const email = document.getElementById('regEmail').value;
+      const email = document.getElementById('regEmail').value.trim();
       const password = document.getElementById('regPass').value;
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         document.getElementById('output').innerText = "Registered: " + userCredential.user.email;
+        console.log("Registered user:", userCredential.user);
       } catch (error) {
         document.getElementById('output').innerText = "Error: " + error.message;
+        console.error(error);
       }
     }
 
     // Login function
     async function loginUser() {
-      const email = document.getElementById('logEmail').value;
+      const email = document.getElementById('logEmail').value.trim();
       const password = document.getElementById('logPass').value;
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
         document.getElementById('output').innerText = "Logged in: " + userCredential.user.email;
+        console.log("Logged in user:", userCredential.user);
       } catch (error) {
-        document.getElementById('output').innerText = "Error: " + error.message;
+        document.getElementById('output').innerText = "Login Error: " + error.message;
+        console.error(error);
       }
     }
 
-    // Show current user
+    // Show currently logged-in user
     function showProfile() {
       const user = auth.currentUser;
       if (user) {
@@ -115,4 +120,5 @@
   </script>
 </body>
 </html>
+
 
