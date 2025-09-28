@@ -4,69 +4,14 @@
   <meta charset="UTF-8">
   <title>Firebase Login/Register</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 300px;
-      text-align: center;
-    }
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    button {
-      width: 95%;
-      padding: 10px;
-      margin-top: 12px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover { background: #45a049; }
-    h2 { margin-bottom: 1rem; }
-    #output { margin-top: 1rem; color: #333; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Register</h2>
-    <input id="regEmail" type="email" placeholder="Email">
-    <input id="regPass" type="password" placeholder="Password">
-    <button onclick="registerUser()">Register</button>
 
-    <h2>Login</h2>
-    <input id="logEmail" type="email" placeholder="Email">
-    <input id="logPass" type="password" placeholder="Password">
-    <button onclick="loginUser()">Login</button>
-
-    <h2>Profile</h2>
-    <button onclick="showProfile()">Show Profile</button>
-    <p id="output"></p>
-  </div>
-
-  <!-- Firebase App (required) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
-  <!-- Firebase Auth -->
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js"></script>
 
   <script>
-    // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
       authDomain: "math-contest-63f0d.firebaseapp.com",
@@ -76,46 +21,17 @@
       appId: "1:387688141725:web:d9742d49e6a49a6bbb5574"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Register function
-    window.registerUser = async function() {
-  const email = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPass').value;
-  try {
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPass').value;
+    
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    
     document.getElementById('output').innerText = "Registered: " + userCredential.user.email;
     console.log("Registered user:", userCredential.user);
-  } catch (error) {
-    document.getElementById('output').innerText = "Error: " + error.message;
-    console.error(error);
-  }
-}
-
-window.loginUser = async function() {
-  const email = document.getElementById('logEmail').value.trim();
-  const password = document.getElementById('logPass').value;
-  try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    document.getElementById('output').innerText = "Logged in: " + userCredential.user.email;
-    console.log("Logged in user:", userCredential.user);
-  } catch (error) {
-    document.getElementById('output').innerText = "Login Error: " + error.message;
-    console.error(error);
-  }
-}
-
-window.showProfile = function() {
-  const user = auth.currentUser;
-  if (user) {
-    document.getElementById('output').innerText = "Logged in as: " + user.email;
-  } else {
-    document.getElementById('output').innerText = "No user logged in.";
-  }
-}
-
+    
   </script>
 </body>
 </html>
