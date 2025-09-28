@@ -1,11 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Website</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Contest</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+h1 { font-size: 28px; }
+button { margin: 5px; padding: 8px 12px; font-size: 16px; }
+#question { margin-top: 20px; font-size: 20px; }
+#timer { font-weight: bold; margin-top: 10px; }
+#score { margin-top: 10px; font-weight: bold; }
+</style>
 </head>
 <body>
-  <h1>Hello World</h1>
-  <p>This is my site hosted on GitHub Pages.</p>
+
+<h1>Math Contest</h1>
+<div id="timer">Time Remaining: 30:00</div>
+<div id="score">Current Score: 0</div>
+
+<div id="question"></div>
+
+<input type="text" id="answer" placeholder="Enter your answer">
+<button onclick="submitAnswer()">Submit Answer</button>
+<button onclick="clearAnswer()">Clear Answer</button>
+
+<div style="margin-top:20px;">
+<button onclick="prevQuestion()">Prev</button>
+<button onclick="nextQuestion()">Next</button>
+<button onclick="finalSubmit()">Submit Contest</button>
+</div>
+
+<script>
+// ---------- Questions ----------
+const QUESTIONS = [
+{q: "Solve: 2^(x+1) + 2^x = 96. Find x.", ans: "5"},
+{q: "How many even numbers from 200-700 can be created by choosing 3 unique digits from {1,2,5,7,8,9}?", ans: "12"},
+{q: "Bucket problem: full weight = 3a-2b", ans: "3a-2b"},
+{q: "Dunbar family: how many children?", ans: "6"},
+{q: "Square EFGH ratio of area to ABCD?", ans: "25/32"},
+{q: "Basketball free throws?", ans: "13"},
+{q: "Circles A, B, C area outside overlap?", ans: "2"},
+{q: "Pencil cost in cents?", ans: "11"},
+{q: "Bookshelf arrangement?", ans: "40"},
+{q: "6x^2 + 14x - 34 = 6, smallest x?", ans: "-4"}
+];
+
+const NUM_QUESTIONS = QUESTIONS.length;
+let currentQ = 0;
+let answers = Array(NUM_QUESTIONS).fill("");
+let attempts = Array(NUM_QUESTIONS).fill(0);
+let scores = Array(NUM_QUESTIONS).fill(7);
+
+// ---------- Timer ----------
+let duration = 30*60; // 30 minutes in seconds
+let timerInterval = setInterval(() => {
+    if(duration <= 0){ autoSubmit(); return; }
+    duration--;
+    let m = Math.floor(duration/60).toString().padStart(2,'0');
+    let s = (duration%60).toString().padStart(2,'0');
+    document.getElementById("timer").textContent = `Time Remaining: ${m}:${s}`;
+},1000);
+
+// ---------- Functions ----------
+function normalize(s){ return s.trim().toLowerCase().replace(/\s/g,""); }
+function computePoints(attempt){ return Math.max(7 - 2*(attempt-1),0); }
+
+function showQuestion(){
+    document.getElementById("question").textContent = `Q${currentQ+1}: ${QUESTIONS[currentQ].q}`;
+    document.getElementById("answer").value = answers[currentQ];
+    updateScore();
+}
+
+function updateScore(){
+    let total = 0;
+    for(let i=0;i<NUM_QUESTIONS;i++){
+        if(normalize(answers[i]) === normalize(QUESTIONS[i].ans) && attempts[i]>0){
+            total += computePoints(attempts[i]);
+        }
+    }
+    document.getElementById("score").textContent = `Current Score: ${total}`;
+}
+
+function submitAnswer(){
+    let ans = document.getElementById("answer").value.trim();
+    if(ans === ""){ alert("Enter an answer."); return; }
+    attempts[currentQ]++;
+    if(normalize(ans) === normalize(QUESTIONS[currentQ].ans)){
+        scores[currentQ] = computePoints(attempts[currentQ]);
+        answers[currentQ] = ans;
+        alert(`Correct! You earned ${scores[currentQ]} points.`);
+    } else {
+        scores[currentQ] = Math.max(scores[currentQ]-2,0);
+        answers[currentQ] = ans;
+        alert(`Incorrect. Problem worth now ${scores[currentQ]}`);
+    }
+    updateScore();
+}
+
+function clearAnswer(){ document.getElementById("answer").value = ""; }
+function prevQuestion(){ if(currentQ>0){ currentQ--; showQuestion(); } }
+function nextQuestion(){ if(currentQ<NUM_QUESTIONS-1){ currentQ++; showQuestion(); } }
+
+function finalSubmit(){
+    clearInterval(timerInterval);
+    let total = 0;
+    for(let i=0;i<NUM_QUESTIONS;i++){
+        if(normalize(answers[i]) === normalize(QUESTIONS[i].ans) && attempts[i]>0){
+            total += computePoints(attempts[i]);
+        }
+    }
+    alert(`Contest Submitted!\nFinal Score: ${total} pts\nTime Used: ${30*60-duration}s`);
+}
+
+function autoSubmit(){
+    clearInterval(timerInterval);
+    alert("Time's up! Contest auto-submitted.");
+    finalSubmit();
+}
+
+// ---------- Initialize ----------
+showQuestion();
+
+</script>
 </body>
 </html>
