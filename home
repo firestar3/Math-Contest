@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Portal</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 50px; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the Math Contest Portal 🎉</h1>
+  <p>You are successfully logged in.</p>
+  <a href="index.html">Back to Login</a>
+</body>
+</html>
