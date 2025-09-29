@@ -3,17 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <title>Firebase Login/Register</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .register-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    .login-btn {
+      background: #2196F3;
+      color: white;
+    }
+    #output {
+      margin-top: 1rem;
+      text-align: center;
+      color: #444;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <p>hola</p>
-  <p id="output"></p>
+  <div class="container">
+    <h2>Math Contest Login</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button class="register-btn" id="registerBtn">Register</button>
+    <button class="login-btn" id="loginBtn">Login</button>
+    <p id="output"></p>
+  </div>
 
   <script type="module">
-    // Import the functions you need from the SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword 
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
       authDomain: "math-contest-63f0d.firebaseapp.com",
@@ -23,24 +85,40 @@
       appId: "1:387688141725:web:d9742d49e6a49a6bbb5574"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const email = 'parulsfo@gmail.com';
-    const password = '123456';
+    const emailField = document.getElementById('email');
+    const passwordField = document.getElementById('password');
+    const output = document.getElementById('output');
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        document.getElementById('output').innerText = "Registered: " + user.email;
-        console.log("Registered user:", user);
-      })
-      .catch((error) => {
-        console.error("Error registering user:", error.code, error.message);
-        document.getElementById('output').innerText = "Error: " + error.message;
-      });
+    // Register button
+    document.getElementById('registerBtn').addEventListener('click', () => {
+      const email = emailField.value;
+      const password = passwordField.value;
 
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          output.innerText = "✅ Registered: " + userCredential.user.email;
+        })
+        .catch((error) => {
+          output.innerText = "❌ " + error.message;
+        });
+    });
+
+    // Login button
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = emailField.value;
+      const password = passwordField.value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          output.innerText = "✅ Logged in: " + userCredential.user.email;
+        })
+        .catch((error) => {
+          output.innerText = "❌ " + error.message;
+        });
+    });
   </script>
 </body>
 </html>
