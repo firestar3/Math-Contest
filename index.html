@@ -19,9 +19,9 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       width: 320px;
+      text-align: center;
     }
     h2 {
-      text-align: center;
       margin-bottom: 1.5rem;
       color: #333;
     }
@@ -42,17 +42,11 @@
       font-size: 15px;
       cursor: pointer;
     }
-    .register-btn {
-      background: #4CAF50;
-      color: white;
-    }
-    .login-btn {
-      background: #2196F3;
-      color: white;
-    }
+    .register-btn { background: #4CAF50; color: white; }
+    .login-btn { background: #2196F3; color: white; }
+    .logout-btn { background: #f44336; color: white; display: none; }
     #output {
       margin-top: 1rem;
-      text-align: center;
       color: #444;
       font-size: 14px;
     }
@@ -60,11 +54,12 @@
 </head>
 <body>
   <div class="container">
-    <h2>Math Contest Login</h2>
+    <h2>Math Contest Portal</h2>
     <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
     <button class="register-btn" id="registerBtn">Register</button>
     <button class="login-btn" id="loginBtn">Login</button>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
     <p id="output"></p>
   </div>
 
@@ -73,7 +68,9 @@
     import { 
       getAuth, 
       createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword 
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -91,8 +88,9 @@
     const emailField = document.getElementById('email');
     const passwordField = document.getElementById('password');
     const output = document.getElementById('output');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-    // Register button
+    // Register
     document.getElementById('registerBtn').addEventListener('click', () => {
       const email = emailField.value;
       const password = passwordField.value;
@@ -106,7 +104,7 @@
         });
     });
 
-    // Login button
+    // Login
     document.getElementById('loginBtn').addEventListener('click', () => {
       const email = emailField.value;
       const password = passwordField.value;
@@ -114,10 +112,30 @@
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           output.innerText = "✅ Logged in: " + userCredential.user.email;
+          // Redirect to home.html
+          window.location.href = "home.html";
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
         });
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        output.innerText = "👋 Logged out";
+      });
+    });
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        output.innerText = "✅ Logged in: " + user.email;
+        logoutBtn.style.display = "block";
+      } else {
+        output.innerText = "Please log in or register.";
+        logoutBtn.style.display = "none";
+      }
     });
   </script>
 </body>
