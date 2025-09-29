@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Firebase Login/Register</title>
-  <style>
-  </style>
 </head>
 <body>
   <p>hola</p>
+  <p id="output"></p>
 
-  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js" type="module"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js" type="module"></script>
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-  <script>
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
       authDomain: "math-contest-63f0d.firebaseapp.com",
@@ -23,31 +24,23 @@
     };
 
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
     const email = 'aaravsfo@gmail.com';
     const password = '123456';
 
-    // Note: createUserWithEmailAndPassword returns a Promise.
-    // You should handle it asynchronously.
-    auth.createUserWithEmailAndPassword(email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed up
         const user = userCredential.user;
         document.getElementById('output').innerText = "Registered: " + user.email;
         console.log("Registered user:", user);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error("Error registering user:", errorCode, errorMessage);
-        document.getElementById('output').innerText = "Error: " + errorMessage;
+        console.error("Error registering user:", error.code, error.message);
+        document.getElementById('output').innerText = "Error: " + error.message;
       });
 
   </script>
-
 </body>
 </html>
-
-
