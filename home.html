@@ -4,12 +4,39 @@
   <meta charset="UTF-8">
   <title>Home Portal</title>
   <style>
-    body { font-family: Arial; text-align: center; margin-top: 50px; }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
   </style>
 </head>
 <body>
-  <h1>Welcome to the Math Contest Portal 🎉</h1>
+  <h1 id="welcome"></h1>
   <p>You are successfully logged in.</p>
   <a href="index.html">Back to Login</a>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
+      authDomain: "math-contest-63f0d.firebaseapp.com",
+      projectId: "math-contest-63f0d",
+      storageBucket: "math-contest-63f0d.firebasestorage.app",
+      messagingSenderId: "387688141725",
+      appId: "1:387688141725:web:d9742d49e6a49a6bbb5574"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Check login state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("welcome").innerText = "Welcome, " + user.email;
+      } else {
+        // Redirect if not logged in
+        window.location.href = "index.html";
+      }
+    });
+  </script>
 </body>
 </html>
