@@ -18,23 +18,38 @@
       padding: 2rem;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      width: 350px;
+      width: 320px;
       text-align: center;
     }
-    h2 { margin-bottom: 1.5rem; color: #333; }
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
     input {
-      width: 100%; padding: 10px; margin: 0.5rem 0;
-      border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+      width: 100%;
+      padding: 10px;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
     }
     button {
-      width: 100%; padding: 10px; margin-top: 0.5rem;
-      border: none; border-radius: 6px; font-size: 15px; cursor: pointer;
+      width: 100%;
+      padding: 10px;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
     }
     .register-btn { background: #4CAF50; color: white; }
     .login-btn { background: #2196F3; color: white; }
     .logout-btn { background: #f44336; color: white; display: none; }
-    .update-btn { background: #ff9800; color: white; display: none; }
-    #output { margin-top: 1rem; color: #444; font-size: 14px; }
+    #output {
+      margin-top: 1rem;
+      color: #444;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -45,9 +60,7 @@
     <button class="register-btn" id="registerBtn">Register</button>
     <button class="login-btn" id="loginBtn">Login</button>
     <button class="logout-btn" id="logoutBtn">Logout</button>
-    <button class="update-btn" id="updateScoreBtn">+10 Points</button>
     <p id="output"></p>
-    <p id="scoreDisplay"></p>
   </div>
 
   <script type="module">
@@ -59,13 +72,6 @@
       signOut,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
@@ -78,99 +84,57 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
     const emailField = document.getElementById('email');
     const passwordField = document.getElementById('password');
     const output = document.getElementById('output');
     const logoutBtn = document.getElementById('logoutBtn');
-    const updateScoreBtn = document.getElementById('updateScoreBtn');
-    const scoreDisplay = document.getElementById('scoreDisplay');
 
     // Register
-    document.getElementById('registerBtn').addEventListener('click', async () => {
+    document.getElementById('registerBtn').addEventListener('click', () => {
       const email = emailField.value;
       const password = passwordField.value;
 
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        output.innerText = "✅ Registered: " + userCredential.user.email;
-
-        // Create user document in Firestore with score=0
-        await setDoc(doc(db, "users", userCredential.user.uid), {
-          email: userCredential.user.email,
-          mathScore: 0
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          output.innerText = "✅ Registered: " + userCredential.user.email;
+        })
+        .catch((error) => {
+          output.innerText = "❌ " + error.message;
         });
-
-        scoreDisplay.innerText = "Math Score: 0";
-      } catch (error) {
-        output.innerText = "❌ " + error.message;
-      }
     });
 
     // Login
-    document.getElementById('loginBtn').addEventListener('click', async () => {
+    document.getElementById('loginBtn').addEventListener('click', () => {
       const email = emailField.value;
       const password = passwordField.value;
 
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        output.innerText = "✅ Logged in: " + userCredential.user.email;
-
-        // Load user score
-        const docRef = doc(db, "users", userCredential.user.uid);
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-          scoreDisplay.innerText = "Math Score: " + snap.data().mathScore;
-        }
-
-        // Redirect if you want
-        // window.location.href = "home.html";
-      } catch (error) {
-        output.innerText = "❌ " + error.message;
-      }
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          output.innerText = "✅ Logged in: " + userCredential.user.email;
+          // Redirect to home.html
+          window.location.href = "home.html";
+        })
+        .catch((error) => {
+          output.innerText = "❌ " + error.message;
+        });
     });
 
     // Logout
     logoutBtn.addEventListener('click', () => {
       signOut(auth).then(() => {
         output.innerText = "👋 Logged out";
-        scoreDisplay.innerText = "";
       });
     });
 
-    // Update Score (+10 points)
-    updateScoreBtn.addEventListener('click', async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        let newScore = (snap.data().mathScore || 0) + 10;
-        await updateDoc(userRef, { mathScore: newScore });
-        scoreDisplay.innerText = "Math Score: " + newScore;
-      }
-    });
-
     // Auth state listener
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         output.innerText = "✅ Logged in: " + user.email;
         logoutBtn.style.display = "block";
-        updateScoreBtn.style.display = "block";
-
-        // Show score
-        const docRef = doc(db, "users", user.uid);
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-          scoreDisplay.innerText = "Math Score: " + snap.data().mathScore;
-        }
       } else {
         output.innerText = "Please log in or register.";
         logoutBtn.style.display = "none";
-        updateScoreBtn.style.display = "none";
-        scoreDisplay.innerText = "";
       }
     });
   </script>
