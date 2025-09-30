@@ -72,6 +72,11 @@
       signOut,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc 
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
@@ -84,6 +89,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const emailField = document.getElementById('email');
     const passwordField = document.getElementById('password');
@@ -96,8 +102,16 @@
       const password = passwordField.value;
 
       createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          output.innerText = "✅ Registered: " + userCredential.user.email;
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+
+          // Initialize Firestore record with mathScore = 0
+          await setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            mathScore: 0
+          });
+
+          output.innerText = "✅ Registered: " + user.email;
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
