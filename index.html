@@ -95,13 +95,6 @@
     const output = document.getElementById('output');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    async function saveMathScore(user, score) {
-  if (!user) return;
-  const userRef = doc(db, "users", user.uid);  // doc path: users/{uid}
-  await setDoc(userRef, { mathScore: score }, { merge: true });
-  console.log("Saved math score:", score);
-}
-
     // Register
     document.getElementById('registerBtn').addEventListener('click', () => {
       const email = emailField.value;
@@ -110,7 +103,12 @@
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           output.innerText = "✅ Registered: " + userCredential.user.email;
-          saveMathScore(user, 85);
+           await setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            mathScore: 0
+    });
+    
+    console.log("User doc created in Firestore:", user.uid);
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
