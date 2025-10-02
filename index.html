@@ -64,9 +64,6 @@
   </div>
 
   <script type="module">
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-
-    const db = getFirestore(app);
     
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { 
@@ -76,7 +73,10 @@
       signOut,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
+    
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
       authDomain: "math-contest-63f0d.firebaseapp.com",
@@ -88,6 +88,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const emailField = document.getElementById('email');
     const passwordField = document.getElementById('password');
