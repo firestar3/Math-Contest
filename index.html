@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>2</title>
+  <title>3</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -103,7 +103,7 @@
           output.innerText = "✅ Registered: " + userCredential.user.email;
           const userRef = ref(db, "users/" + user.uid);
           set(userRef, {email: user.email, mathScore: 0});
-          console.log("Reached this point!);
+          console.log("Reached this point!");
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
