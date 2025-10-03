@@ -101,6 +101,8 @@
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           output.innerText = "✅ Registered: " + userCredential.user.email;
+          const userRef = ref(db, "users/" + user.uid);
+          set(userRef, {email: user.email, mathScore: 0});
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
@@ -135,11 +137,6 @@
       if (user) {
         output.innerText = "✅ Logged in: " + user.email;
         logoutBtn.style.display = "block";
-        const userRef = ref(db, "users/" + user.uid);
-        set(userRef, {
-        email: user.email,
-        mathScore: 95   // example score
-      });
       } else {
         output.innerText = "Please log in or register.";
         logoutBtn.style.display = "none";
