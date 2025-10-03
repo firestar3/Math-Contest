@@ -65,6 +65,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
     import { 
       getAuth, 
       createUserWithEmailAndPassword, 
@@ -76,6 +77,7 @@
     const firebaseConfig = {
       apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
       authDomain: "math-contest-63f0d.firebaseapp.com",
+      databaseURL: "https://math-contest-63f0d-default-rtdb.firebaseio.com/",
       projectId: "math-contest-63f0d",
       storageBucket: "math-contest-63f0d.firebasestorage.app",
       messagingSenderId: "387688141725",
@@ -84,6 +86,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
     const emailField = document.getElementById('email');
     const passwordField = document.getElementById('password');
@@ -132,6 +135,11 @@
       if (user) {
         output.innerText = "✅ Logged in: " + user.email;
         logoutBtn.style.display = "block";
+        const userRef = ref(db, "users/" + user.uid);
+        set(userRef, {
+        email: user.email,
+        mathScore: 95   // example score
+      });
       } else {
         output.innerText = "Please log in or register.";
         logoutBtn.style.display = "none";
