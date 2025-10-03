@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>1</title>
+  <title>2</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -101,6 +101,9 @@
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           output.innerText = "✅ Registered: " + userCredential.user.email;
+          const userRef = ref(db, "users/" + user.uid);
+          set(userRef, {email: user.email, mathScore: 0});
+          console.log("Reached this point!);
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
@@ -135,8 +138,6 @@
       if (user) {
         output.innerText = "✅ Logged in: " + user.email;
         logoutBtn.style.display = "block";
-        const userRef = ref(db, "users/" + user.uid);
-          set(userRef, {email: user.email, mathScore: 0});
       } else {
         output.innerText = "Please log in or register.";
         logoutBtn.style.display = "none";
