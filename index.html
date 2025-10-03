@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>4</title>
+  <title>5</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -97,12 +97,11 @@
     document.getElementById('registerBtn').addEventListener('click', () => {
       const email = emailField.value;
       const password = passwordField.value;
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const userRef = ref(db, "users/" + user.uid);
+      const userRef = ref(db, "users/" + user.uid);
           set(userRef, {email: user.email, mathScore: 0});
           console.log("Reached this point!");
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
           output.innerText = "✅ Registered: " + userCredential.user.email;
         })
         .catch((error) => {
