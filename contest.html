@@ -71,14 +71,51 @@
     <button id="submitBtn">Submit Answers</button>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { getDatabase, ref, update, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA26i_VumRnCZxe1bfDBWXb563ly_w5mn0",
+      authDomain: "math-contest-63f0d.firebaseapp.com",
+      projectId: "math-contest-63f0d",
+      storageBucket: "math-contest-63f0d.firebasestorage.app",
+      messagingSenderId: "387688141725",
+      appId: "1:387688141725:web:d9742d49e6a49a6bbb5574",
+      databaseURL: "https://math-contest-63f0d-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Answer key — replace with real answers later
+    const shortKey = [
+      "ans1","ans2","ans3","ans4","ans5","ans6","ans7","ans8","ans9","ans10",
+      "ans11","ans12","ans13","ans14","ans15"
+    ];
+    const proofKey = ["proof1","proof2","proof3","proof4","proof5"];
+
+    // Variables
     let totalSeconds = 45 * 60; // 45 minutes
     let currentSection = "short";
+    let userEmail = null;
     const timerElement = document.getElementById("timer");
     const submitBtn = document.getElementById("submitBtn");
     const questionsContainer = document.getElementById("questions");
 
-    // Generate 15 short-answer questions
+    // Load user
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userEmail = user.email.replace(/\./g, "_");
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Render 15 short-answer questions
     for (let i = 1; i <= 15; i++) {
       const qDiv = document.createElement("div");
       qDiv.classList.add("question");
@@ -86,6 +123,7 @@
       questionsContainer.appendChild(qDiv);
     }
 
+    // Timer function
     const timer = setInterval(() => {
       totalSeconds--;
       const mins = Math.floor(totalSeconds / 60);
@@ -98,25 +136,21 @@
     }, 1000);
 
     function handleAutoSubmit() {
-      if (currentSection === "short") {
-        moveToProofs();
-      } else {
-        submitContest();
-      }
+      if (currentSection === "short") moveToProofs();
+      else submitContest();
     }
 
     submitBtn.addEventListener("click", () => {
-      if (currentSection === "short") {
-        moveToProofs();
-      } else {
-        submitContest();
-      }
+      if (currentSection === "short") moveToProofs();
+      else submitContest();
     });
 
+    // Move to proofs
     function moveToProofs() {
       currentSection = "proofs";
-      totalSeconds = 15 * 60; // Add 15 minutes
+      totalSeconds += 15 * 60; // ADD 15 minutes, not reset
       document.querySelectorAll("textarea").forEach((el) => (el.disabled = true));
+
       questionsContainer.innerHTML = "<h2>Part 2: Proof Questions (5)</h2>";
       for (let i = 1; i <= 5; i++) {
         const pDiv = document.createElement("div");
@@ -127,12 +161,40 @@
       submitBtn.textContent = "Submit Final Answers";
     }
 
-    function submitContest() {
+    // Submission and scoring
+    async function submitContest() {
       clearInterval(timer);
-      alert("Contest submitted successfully!");
-      window.location.href = "home.html";
+      let score = 0;
+
+      // Compare short answers
+      for (let i = 1; i <= 15; i++) {
+        const ans = document.getElementById(`q${i}`)?.value?.trim().toLowerCase();
+        if (ans && ans === shortKey[i - 1].toLowerCase()) score += 1;
+      }
+
+      // Compare proofs
+      for (let i = 1; i <= 5; i++) {
+        const ans = document.getElementById(`p${i}`)?.value?.trim().toLowerCase();
+        if (ans && ans === proofKey[i - 1].toLowerCase()) score += 2;
+      }
+
+      if (!userEmail) {
+        alert("Error: User not logged in properly.");
+        return;
+      }
+
+      try {
+        const userRef = ref(db, "users/" + userEmail);
+        const snap = await get(userRef);
+        let currentScore = snap.exists() && snap.val().score ? snap.val().score : 0;
+
+        await update(userRef, { score: currentScore + score });
+        alert(`Contest submitted!\nYour score: ${score} points`);
+        window.location.href = "home.html";
+      } catch (err) {
+        alert("Error updating score: " + err.message);
+      }
     }
   </script>
 </body>
 </html>
-
