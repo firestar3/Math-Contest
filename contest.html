@@ -1,1 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Contest</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    #timer {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 { color: #3f51b5; }
+    .question {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    textarea {
+      width: 100%;
+      height: 70px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: #303f9f;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <header>Math Contest</header>
+
+  <div class="container">
+    <div id="timer">Time Remaining: 45:00</div>
+    <h2>Part 1: Short Questions (15)</h2>
+    <div id="questions"></div>
+    <button id="submitBtn">Submit Answers</button>
+  </div>
+
+  <script>
+    let totalSeconds = 45 * 60; // 45 minutes
+    let currentSection = "short";
+    const timerElement = document.getElementById("timer");
+    const submitBtn = document.getElementById("submitBtn");
+    const questionsContainer = document.getElementById("questions");
+
+    // Generate 15 short-answer questions
+    for (let i = 1; i <= 15; i++) {
+      const qDiv = document.createElement("div");
+      qDiv.classList.add("question");
+      qDiv.innerHTML = `<label>Question ${i}:</label><br><textarea id="q${i}" placeholder="Enter your answer here..."></textarea>`;
+      questionsContainer.appendChild(qDiv);
+    }
+
+    const timer = setInterval(() => {
+      totalSeconds--;
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      timerElement.textContent = `Time Remaining: ${mins}:${secs < 10 ? "0" : ""}${secs}`;
+      if (totalSeconds <= 0) {
+        clearInterval(timer);
+        handleAutoSubmit();
+      }
+    }, 1000);
+
+    function handleAutoSubmit() {
+      if (currentSection === "short") {
+        moveToProofs();
+      } else {
+        submitContest();
+      }
+    }
+
+    submitBtn.addEventListener("click", () => {
+      if (currentSection === "short") {
+        moveToProofs();
+      } else {
+        submitContest();
+      }
+    });
+
+    function moveToProofs() {
+      currentSection = "proofs";
+      totalSeconds = 15 * 60; // Add 15 minutes
+      document.querySelectorAll("textarea").forEach((el) => (el.disabled = true));
+      questionsContainer.innerHTML = "<h2>Part 2: Proof Questions (5)</h2>";
+      for (let i = 1; i <= 5; i++) {
+        const pDiv = document.createElement("div");
+        pDiv.classList.add("question");
+        pDiv.innerHTML = `<label>Proof ${i}:</label><br><textarea id="p${i}" placeholder="Enter your proof here..."></textarea>`;
+        questionsContainer.appendChild(pDiv);
+      }
+      submitBtn.textContent = "Submit Final Answers";
+    }
+
+    function submitContest() {
+      clearInterval(timer);
+      alert("Contest submitted successfully!");
+      window.location.href = "home.html";
+    }
+  </script>
+</body>
+</html>
 
