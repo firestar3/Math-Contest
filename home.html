@@ -4,13 +4,47 @@
   <meta charset="UTF-8">
   <title>Home Portal</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    h1 { font-size: 2rem; margin-bottom: 10px; }
+    p { font-size: 1.1rem; }
+    button, a {
+      background-color: #fff;
+      color: #333;
+      border: none;
+      padding: 12px 25px;
+      margin: 10px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover, a:hover {
+      background-color: #f0f0f0;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
-  <h1 id="welcome"></h1>
+  <h1 id="welcome">Welcome</h1>
   <p>You are successfully logged in.</p>
-  <a href="index.html">Back to Login</a>
+
+  <div>
+    <a href="contest.html">Go to Contest</a>
+    <button id="logoutBtn">Logout</button>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -28,14 +62,19 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Check login state
+    // Monitor login state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById("welcome").innerText = "Welcome, " + user.email;
       } else {
-        // Redirect if not logged in
         window.location.href = "index.html";
       }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
     });
   </script>
 </body>
