@@ -100,10 +100,6 @@
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           output.innerText = "✅ Registered: " + userCredential.user.email;
-          const user = userCredential.user;
-          const userRef = ref(db, "users/" + user.uid);
-          set(userRef, {email: user.email, mathScore: 0});
-          console.log("Reached this point!");
         })
         .catch((error) => {
           output.innerText = "❌ " + error.message;
