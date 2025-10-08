@@ -186,9 +186,8 @@
       try {
         const userRef = ref(db, "users/" + userEmail);
         const snap = await get(userRef);
-        let currentScore = snap.exists() && snap.val().score ? snap.val().score : 0;
 
-        await update(userRef, { score: currentScore + score });
+        await update(userRef, { score: score });
         alert(`Contest submitted!\nYour score: ${score} points`);
         window.location.href = "home.html";
       } catch (err) {
