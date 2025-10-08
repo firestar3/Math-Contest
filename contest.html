@@ -149,7 +149,7 @@
     function moveToProofs() {
       currentSection = "proofs";
       totalSeconds += 15 * 60; // ADD 15 minutes, not reset
-      document.querySelectorAll("textarea").forEach((el) => (el.disabled = true));
+      document.querySelectorAll("textarea").forEach((el) => (el.readOnly = true));
 
       questionsContainer.innerHTML = "<h2>Part 2: Proof Questions (5)</h2>";
       for (let i = 1; i <= 5; i++) {
