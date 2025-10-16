@@ -103,9 +103,12 @@ const submitBtn = document.getElementById("submitBtn");
 const questionsContainer = document.getElementById("questions");
 
 // Object to store short answers
-const shortAnswers = {"How many arrangements of the following books can be made in a line: 2 spanish books, 3 english books, 1 history book, and 2 science books such that the history book is on one of the ends of the line. (Assume the same type of books are identical)
-"};
+const shortAnswers = {};
 const proofAnswers = {};
+
+const shortQuestions = {"How many arrangements of the following books can be made in a line: 2 spanish books, 3 english books, 1 history book, and 2 science books such that the history book is on one of the ends of the line. (Assume the same type of books are identical)
+"};
+const proofQuestions = {};
 
 // Load user
 onAuthStateChanged(auth, (user) => {
@@ -120,7 +123,7 @@ onAuthStateChanged(auth, (user) => {
 for (let i = 1; i <= 15; i++) {
   const qDiv = document.createElement("div");
   qDiv.classList.add("question");
-  qDiv.innerHTML = `<label>Question ${i}:</label><br><textarea id="q${i}" placeholder="Enter your answer here..."></textarea>`;
+  qDiv.innerHTML = `<label>Question ${i}: ${shortQuestions[0]}</label><br><textarea id="q${i}" placeholder="Enter your answer here..."></textarea>`;
   questionsContainer.appendChild(qDiv);
 
   // Track answers in JS object
