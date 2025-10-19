@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Math Contest1</title>
+  <title>Math Contest</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -66,7 +66,7 @@
 
 <div class="container">
   <div id="timer">Time Remaining: 45:00</div>
-  <h2>Part 1: Short Questions (15)</h2>
+  <h2 id="sectionTitle">Part 1: Short Questions (15)</h2>
   <div id="questions"></div>
   <button id="submitBtn">Submit Answers</button>
 </div>
@@ -74,7 +74,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { getDatabase, ref, update, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+import { getDatabase, ref, update, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -91,119 +91,141 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// Answer keys
-const shortKey = ["420","5","7/9","80","16","cot^3","1/3","393","ans9","1/2","2","ans12","ans13","ans14","ans15"];
+// --- Question banks ---
+const shortQuestions = [
+  "1. Simplify: 210 + 210",
+  "2. Evaluate: 10 / 2",
+  "3. Find the ratio 7:9 as a fraction.",
+  "4. What is 8 × 10?",
+  "5. Simplify 4².",
+  "6. Simplify cot × cot².",
+  "7. Find 1/9 + 2/9.",
+  "8. Evaluate 400 − 7.",
+  "9. What is 13 × 3 − 6?",
+  "10. Simplify 1 ÷ 2.",
+  "11. Solve for x if 2x = 4.",
+  "12. Simplify (2×3)² ÷ 3².",
+  "13. Find (4×5) − 6.",
+  "14. What is √49?",
+  "15. Simplify 2³ − 1."
+];
+
+const shortKey = ["420","5","7/9","80","16","cot^3","1/3","393","33","1/2","2","4","14","7","7"];
 const proofKey = ["proof1","proof2","proof3","proof4","proof5"];
 
-let totalSeconds = 45 * 60; // 45 minutes
+const proofPrompts = [
+  "Proof 1: Prove that the sum of two even numbers is even.",
+  "Proof 2: Prove that √2 is irrational.",
+  "Proof 3: Show that the sum of the angles in a triangle is 180°.",
+  "Proof 4: Prove that if a number is divisible by 4, it is even.",
+  "Proof 5: Prove that there are infinitely many prime numbers."
+];
+
+let totalSeconds = 45 * 60;
 let currentSection = "short";
 let userEmail = null;
 const timerElement = document.getElementById("timer");
 const submitBtn = document.getElementById("submitBtn");
 const questionsContainer = document.getElementById("questions");
+const sectionTitle = document.getElementById("sectionTitle");
 
-// Object to store short answers
 const shortAnswers = {};
 const proofAnswers = {};
 
-// Load user
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    userEmail = user.email.replace(/\./g, "_");
-  } else {
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
     window.location.href = "index.html";
+    return;
   }
+  userEmail = user.email.replace(/\./g, "_");
+
+  // --- Prevent retake ---
+  const userRef = ref(db, "users/" + userEmail);
+  const snap = await get(userRef);
+  if (snap.exists() && snap.val().hasTakenContest) {
+    alert("You have already taken the contest. Redirecting to home.");
+    window.location.href = "home.html";
+    return;
+  }
+
+  renderShortQuestions();
+  startTimer();
 });
 
-// Render 15 short-answer questions
-for (let i = 1; i <= 15; i++) {
-  const qDiv = document.createElement("div");
-  qDiv.classList.add("question");
-  qDiv.innerHTML = `<label>Question ${i}: </label><br><textarea id="q${i}" placeholder="Enter your answer here..."></textarea>`;
-  questionsContainer.appendChild(qDiv);
+function renderShortQuestions() {
+  questionsContainer.innerHTML = "";
+  shortQuestions.forEach((q, i) => {
+    const qDiv = document.createElement("div");
+    qDiv.classList.add("question");
+    qDiv.innerHTML = `<label>${q}</label><br><textarea id="q${i+1}" placeholder="Enter your answer..."></textarea>`;
+    questionsContainer.appendChild(qDiv);
 
-  // Track answers in JS object
-  const textarea = qDiv.querySelector("textarea");
-  textarea.addEventListener("input", (e) => {
-    shortAnswers[`q${i}`] = e.target.value.trim();
+    qDiv.querySelector("textarea").addEventListener("input", (e) => {
+      shortAnswers[`q${i+1}`] = e.target.value.trim();
+    });
   });
 }
 
-// Timer function
-const timer = setInterval(() => {
-  totalSeconds--;
-  const mins = Math.floor(totalSeconds / 60);
-  const secs = totalSeconds % 60;
-  timerElement.textContent = `Time Remaining: ${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  if (totalSeconds <= 0) {
-    clearInterval(timer);
-    handleAutoSubmit();
-  }
-}, 1000);
+function startTimer() {
+  const timer = setInterval(() => {
+    totalSeconds--;
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    timerElement.textContent = `Time Remaining: ${mins}:${secs < 10 ? "0" : ""}${secs}`;
+    if (totalSeconds <= 0) {
+      clearInterval(timer);
+      handleAutoSubmit();
+    }
+  }, 1000);
+
+  submitBtn.addEventListener("click", () => {
+    if (currentSection === "short") moveToProofs();
+    else submitContest(timer);
+  });
+}
+
+function moveToProofs() {
+  currentSection = "proofs";
+  totalSeconds += 15 * 60;
+  sectionTitle.textContent = "Part 2: Proof Questions (5)";
+  questionsContainer.innerHTML = "";
+
+  proofPrompts.forEach((p, i) => {
+    const pDiv = document.createElement("div");
+    pDiv.classList.add("question");
+    pDiv.innerHTML = `<label>${p}</label><br><textarea id="p${i+1}" placeholder="Enter your proof..."></textarea>`;
+    questionsContainer.appendChild(pDiv);
+
+    pDiv.querySelector("textarea").addEventListener("input", (e) => {
+      proofAnswers[`p${i+1}`] = e.target.value.trim();
+    });
+  });
+
+  submitBtn.textContent = "Submit Final Answers";
+}
 
 function handleAutoSubmit() {
   if (currentSection === "short") moveToProofs();
   else submitContest();
 }
 
-submitBtn.addEventListener("click", () => {
-  if (currentSection === "short") moveToProofs();
-  else submitContest();
-});
-
-// Move to proofs
-function moveToProofs() {
-  currentSection = "proofs";
-  totalSeconds += 15 * 60; // add 15 minutes
-
-  // Lock short answers
-  document.querySelectorAll("textarea").forEach(el => el.readOnly = true);
-
-  // Render proofs
-  questionsContainer.innerHTML = "<h2>Part 2: Proof Questions (5)</h2>";
-  for (let i = 1; i <= 5; i++) {
-    const pDiv = document.createElement("div");
-    pDiv.classList.add("question");
-    pDiv.innerHTML = `<label>Proof ${i}:</label><br><textarea id="p${i}" placeholder="Enter your proof here..."></textarea>`;
-    questionsContainer.appendChild(pDiv);
-
-    // Track proof answers
-    const textarea = pDiv.querySelector("textarea");
-    textarea.addEventListener("input", (e) => {
-      proofAnswers[`p${i}`] = e.target.value.trim();
-    });
-  }
-
-  submitBtn.textContent = "Submit Final Answers";
-}
-
-// Submission and scoring
-async function submitContest() {
+async function submitContest(timer) {
   clearInterval(timer);
   let score = 0;
 
-  // Grade short answers
-  for (let i = 1; i <= 15; i++) {
-    const ans = (shortAnswers[`q${i}`] || "").toLowerCase();
-    if (ans === shortKey[i-1].toLowerCase()) score += 1;
+  for (let i = 0; i < shortKey.length; i++) {
+    if ((shortAnswers[`q${i+1}`] || "").toLowerCase() === shortKey[i].toLowerCase()) score += 1;
   }
-
-  // Grade proofs
-  for (let i = 1; i <= 5; i++) {
-    const ans = (proofAnswers[`p${i}`] || "").toLowerCase();
-    if (ans === proofKey[i-1].toLowerCase()) score += 2;
-  }
-
-  if (!userEmail) {
-    alert("Error: User not logged in properly.");
-    return;
+  for (let i = 0; i < proofKey.length; i++) {
+    if ((proofAnswers[`p${i+1}`] || "").toLowerCase() === proofKey[i].toLowerCase()) score += 2;
   }
 
   try {
     const userRef = ref(db, "users/" + userEmail);
-    const snap = await get(userRef);
-    let currentScore = snap.exists() && snap.val().score ? snap.val().score : 0;
-    await update(userRef, { score: currentScore + score });
+    await update(userRef, { 
+      score: score,
+      hasTakenContest: true
+    });
 
     alert(`Contest submitted!\nYour score: ${score} points`);
     window.location.href = "home.html";
