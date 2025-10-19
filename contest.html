@@ -97,7 +97,7 @@ const shortQuestions = [
   "2. What is the area of a triangle contained by y = 1, y = -0.5x + 4.5, and y = 2x - 3?",
   "3. Define p as a prime number greater than 11. Solve for the sum of the divisors of 12p in terms of P.",
   "4. Count of odd numbers in [300,900] divisible by 3 and not divisible by 5.",
-  "5. The following image is provided with a square and a circle. The distance between one side of the square and one inner part of the circle is shown as length 1. The square and circle also share 3 points of Tangency marked as A, B, and C. Solve for the area of the square.",
+  "5. The following image is provided with a square and a circle. The distance between one side of the square and one inner part of the circle is shown as length 1. The square and circle also share 3 points of Tangency marked as A, B, and C. Solve for the area of the square. ",
   "6. Simplify the fraction into a singular trigonometric function. (csc - sin) / (sec - cos).",
   "7. Define the function f(x) = (x-1)/(x+1). Find the value of f^2025(2),  where f^n(x) denotes the function f(x) being applied n times.",
   "8. Avi is hosting a special “Quad-elimination” football game with 100 teams. The tournament follows like a normal tournament, except when a team loses, it drops to a lower-level bracket, of which there are 4 total brackets. When a team loses in the lowest bracket, they are eliminated. At the end of the rounds, 4 teams will remain, of which the top bracket will play the bottom bracket, and the 2nd bracket will play the 3rd bracket. The winner of each will then play, and then the tournament will be concluded. How many total games will the tournament last? (Note: All 100 teams start in the top bracket)",
@@ -157,6 +157,9 @@ function renderShortQuestions() {
   shortQuestions.forEach((q, i) => {
     const qDiv = document.createElement("div");
     qDiv.classList.add("question");
+    if (i === 5) {
+      qDiv.innerHTML += `<img src="Problem5Image.png" alt="Problem 5 Diagram" style="max-width:100%; border-radius:8px; margin:10px 0;">`;
+    }
     qDiv.innerHTML = `<label>${q}</label><br><textarea id="q${i+1}" placeholder="Enter your answer..."></textarea>`;
     questionsContainer.appendChild(qDiv);
 
