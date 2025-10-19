@@ -62,7 +62,7 @@
   </style>
 </head>
 <body>
-<header>Math Contest</header>
+<header>Math Contest2</header>
 
 <div class="container">
   <div id="timer">Time Remaining: 45:00</div>
@@ -93,32 +93,32 @@ const db = getDatabase(app);
 
 // --- Question banks ---
 const shortQuestions = [
-  "1. Simplify: 210 + 210",
-  "2. Evaluate: 10 / 2",
-  "3. Find the ratio 7:9 as a fraction.",
-  "4. What is 8 × 10?",
-  "5. Simplify 4².",
-  "6. Simplify cot × cot².",
-  "7. Find 1/9 + 2/9.",
-  "8. Evaluate 400 − 7.",
-  "9. What is 13 × 3 − 6?",
-  "10. Simplify 1 ÷ 2.",
-  "11. Solve for x if 2x = 4.",
-  "12. Simplify (2×3)² ÷ 3².",
-  "13. Find (4×5) − 6.",
-  "14. What is √49?",
-  "15. Simplify 2³ − 1."
+  "1. How many arrangements of the following books can be made in a line: 2 Spanish books, 3 English books, 1 history book, and 2 science books such that the history book is on one of the ends of the line. (Assume the same type of books are identical)",
+  "2. What is the area of a triangle contained by y = 1, y = -0.5x + 4.5, and y = 2x - 3?",
+  "3. Define p as a prime number greater than 11. Solve for the sum of the divisors of 12p in terms of P.",
+  "4. Count of odd numbers in [300,900] divisible by 3 and not divisible by 5.",
+  "5. The following image is provided with a square and a circle. The distance between one side of the square and one inner part of the circle is shown as length 1. The square and circle also share 3 points of Tangency marked as A, B, and C. Solve for the area of the square.",
+  "6. Simplify the fraction into a singular trigonometric function.",
+  "7. Define the function f(x) = (x-1)/(x+1). Find the value of f^2025(2),  where f^n(x) denotes the function f(x) being applied n times.",
+  "8. Avi is hosting a special “Quad-elimination” football game with 100 teams. The tournament follows like a normal tournament, except when a team loses, it drops to a lower-level bracket, of which there are 4 total brackets. When a team loses in the lowest bracket, they are eliminated. At the end of the rounds, 4 teams will remain, of which the top bracket will play the bottom bracket, and the 2nd bracket will play the 3rd bracket. The winner of each will then play, and then the tournament will be concluded. How many total games will the tournament last? (Note: All 100 teams start in the top bracket)",
+  "9. A coin of diameter ⅓ is tossed onto a unit square with a line going from 2 midpoints on opposite sides. The coin will have no part of it outside of the unit square. What is the probability that the coin does not intersect with the line?",
+  "10. Aarav the alligator is climbing stairs. If he can climb 1, 2, or 3 steps at a time, find the number of ways that Aarav can climb 15 stairs.",
+  "11. Find the number of remainders when x^100 is divided by 25.",
+  "12. If P(x) = x^4 + ax^3 + bx^2 + cx + d, and P(1) = 10, P(2) = 20, and P(3) = 30, find the value of (P(12) + P(-8))/10.",
+  "13. Incomplete Problem",
+  "14. Quadrilateral ABCD is cyclic. Let O be the center of the circle, and DB be the diameter. The radius of the circle is 5/2. If AB = 4, BC = 7, and AC = 8, find the value of DC. Express your answer as a fraction in the simplest form.",
+  "15. In triangle ABC, median AF is present, with F being on BC. Cevian BD is present, with D on AC. Lastly, cevian CE is present, with E on AB. Given that AE = 5, BF = CF = 6, and AD = 7, find the ratio of EB/CD. Express your answer as a fraction in the simplest form."
 ];
 
-const shortKey = ["420","5","7/9","80","16","cot^3","1/3","393","33","1/2","2","4","14","7","7"];
-const proofKey = ["proof1","proof2","proof3","proof4","proof5"];
+const shortKey = ["420","5","28p+28","80","16","cot^3","1/3","393","1/2","5768","2","X","X","X","X"];
+const proofKey = ["X","X","X","X","X"];
 
 const proofPrompts = [
-  "Proof 1: Prove that the sum of two even numbers is even.",
-  "Proof 2: Prove that √2 is irrational.",
-  "Proof 3: Show that the sum of the angles in a triangle is 180°.",
-  "Proof 4: Prove that if a number is divisible by 4, it is even.",
-  "Proof 5: Prove that there are infinitely many prime numbers."
+  "Proof 1: Find the largest number that cannot be created with the numbers 7, 9, and 11 and prove it's the largest.",
+  "Proof 2: Prove that the difference between a square of an odd number and 1 is always divisible by 8.",
+  "Proof 3: Dominoes are placed on top of a regular 8x8 chessboard, where each domino takes up two tiles in a 2x1 tile shape that is rotatable. You are given unlimited dominos to fill the chessboard however 2 corners diagonal from each other are removed. Create a proof that there is no arrangement of dominoes that cover the entire board, without overlap and without any pieces hanging over the edges.",
+  "Proof 4: Points A, B, and C are situated in a plane such that angle ABC = 90 degrees. Let D be an arbitrary point on AB, and let E be the foot of the perpendicular from D to AC. Prove that angle DBE = angle DCE.",
+  "Proof 5: Incomplete Problem"
 ];
 
 let totalSeconds = 45 * 60;
