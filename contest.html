@@ -152,20 +152,25 @@ onAuthStateChanged(auth, async (user) => {
   startTimer();
 });
 
-function renderShortQuestions() {
-  questionsContainer.innerHTML = "";
-  shortQuestions.forEach((q, i) => {
-    const qDiv = document.createElement("div");
-    qDiv.classList.add("question");
-    if (i === 5) {
-      qDiv.innerHTML += `<img src="Problem5Image.png" alt="Problem 5 Diagram" style="max-width:100%; border-radius:8px; margin:10px 0;">`;
-    }
-    qDiv.innerHTML = `<label>${q}</label><br><textarea id="q${i+1}" placeholder="Enter your answer..."></textarea>`;
-    questionsContainer.appendChild(qDiv);
+for (let i = 1; i <= 15; i++) {
+  const qDiv = document.createElement("div");
+  qDiv.classList.add("question");
 
-    qDiv.querySelector("textarea").addEventListener("input", (e) => {
-      shortAnswers[`q${i+1}`] = e.target.value.trim();
-    });
+  let questionHTML = `<label>Question ${i}: ${shortQuestions[i - 1]}</label><br>`;
+
+  // Add image to Question 5
+  if (i === 5) {
+    questionHTML += `<img src="Problem5Image.png" alt="Problem 5 Diagram" style="max-width:100%; border-radius:8px; margin:10px 0;">`;
+  }
+
+  questionHTML += `<textarea id="q${i}" placeholder="Enter your answer here..."></textarea>`;
+  qDiv.innerHTML = questionHTML;
+  questionsContainer.appendChild(qDiv);
+
+  // Track answers
+  const textarea = qDiv.querySelector("textarea");
+  textarea.addEventListener("input", (e) => {
+    shortAnswers[`q${i}`] = e.target.value.trim();
   });
 }
 
